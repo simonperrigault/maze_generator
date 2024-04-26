@@ -36,7 +36,7 @@ class MazeGenerator:
     # res[0][0] |= 2
     # res[width-1][height-1] |= 4
 
-    return res, anim
+    return res, anim, MazeGenerator.bfs(res)
   
   @staticmethod
   def randomPrim(width, height):
@@ -63,7 +63,7 @@ class MazeGenerator:
         if dir == idir: continue
         walls.append((x+dx, y+dy, dir))
 
-    return res, anim
+    return res, anim, MazeGenerator.bfs(res)
   
   @staticmethod
   def aldousbroder(width, height):
@@ -84,7 +84,7 @@ class MazeGenerator:
         anim.append((x+dx, y+dy))
       x, y = x+dx, y+dy
 
-    return res, anim
+    return res, anim, MazeGenerator.bfs(res)
   
   @staticmethod
   def wilson(width, height):
@@ -119,7 +119,7 @@ class MazeGenerator:
         anim.append((x, y))
         x, y = next_x, next_y
 
-    return res, anim
+    return res, anim, MazeGenerator.bfs(res)
   
   @staticmethod
   def hasNext(grid, i, j):
@@ -129,3 +129,34 @@ class MazeGenerator:
     if i < width-1 and not grid[i+1][j]: return True
     if j < height-1 and not grid[i][j+1]: return True
     return False
+  
+  @staticmethod
+  def code_to_dir(code):
+    res = []
+    if code & 1: res.append((-1, 0))
+    if code & 2: res.append((0, -1))
+    if code & 4: res.append((0, 1))
+    if code & 8: res.append((1, 0))
+    return res
+  
+  @staticmethod
+  def bfs(grid):
+    width = len(grid)
+    height = len(grid[0])
+    queue = deque()
+    queue.append((width-1, height-1))
+    prece = [[None for j in range(height)] for i in range(width)]
+    while queue:
+      x, y = queue.popleft()
+      for dx, dy in MazeGenerator.code_to_dir(grid[x][y]):
+        if not prece[x+dx][y+dy]:
+          prece[x+dx][y+dy] = (x, y)
+          queue.append((x+dx, y+dy))
+    path = []
+    x, y = 0, 0
+    while (x, y) != (width-1, height-1):
+      path.append((x, y))
+      prev_x, prev_y = prece[x][y]
+      x, y = prev_x, prev_y
+    path.append((width-1, height-1))
+    return path

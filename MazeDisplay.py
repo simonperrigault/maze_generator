@@ -7,7 +7,7 @@ COULEUR_SOLUTION = "red"
 PERIODE_ANIM = 5
 
 class MazeDisplay:
-  def __init__(self, buffer, anim):
+  def __init__(self, buffer, anim, solution):
     self.buffer = buffer
     self.width = len(buffer)
     self.height = len(buffer[0])
@@ -15,6 +15,7 @@ class MazeDisplay:
     self.mheight = 2*self.height-1
 
     self.anim = anim
+    self.solution = solution
 
     self.map = [[0 for j in range(self.mheight)] for i in range(self.mwidth)]
     for i in range(0, self.mwidth, 2):
@@ -26,7 +27,7 @@ class MazeDisplay:
         if c & 1: self.map[i-1][j] = 1
         if c & 8: self.map[i+1][j] = 1
 
-    self.taille_carreau = 10
+    self.taille_carreau = 10 if self.width <= 50 and self.height <= 90 else 5
 
     self.fenetre = tk.Tk()
     self.fwidth = self.taille_carreau*self.mheight
@@ -64,27 +65,14 @@ class MazeDisplay:
       self.curr_anim += 1
 
   def afficher_solution(self):
-    queue = deque()
-    queue.append((0,0))
-    prece = [[None for j in range(self.height)] for i in range(self.width)]
-    while queue:
-      x, y = queue.popleft()
-      for dx, dy in MazeDisplay.code_to_dir(self.buffer[x][y]):
-        if not prece[x+dx][y+dy]:
-          prece[x+dx][y+dy] = (x, y)
-          queue.append((x+dx, y+dy))
-    x, y = self.width-1, self.height-1
-    self.colorier_carreau(2*x, 2*y, self.curr_anim, COULEUR_SOLUTION)
-    while (x, y) != (0, 0):
-      prev_x, prev_y = prece[x][y]
-      dx = x - prev_x
-      dy = y - prev_y
-      self.colorier_carreau(2*x - dx, 2*y - dy, self.curr_anim, COULEUR_SOLUTION)
-      self.colorier_carreau(2*x, 2*y, self.curr_anim, COULEUR_SOLUTION)
-      x, y = prev_x, prev_y
+    for i in range(len(self.solution)-1):
+      x1, y1 = self.solution[i]
+      x2, y2 = self.solution[i+1]
+      dx, dy = x2-x1, y2-y1
+      self.colorier_carreau(2*x1, 2*y1, self.curr_anim, COULEUR_SOLUTION)
+      self.colorier_carreau(2*x1+dx, 2*y1+dy, self.curr_anim, COULEUR_SOLUTION)
       self.curr_anim += 1
-    self.colorier_carreau(0, 0, self.curr_anim, COULEUR_SOLUTION)
-    
+    self.colorier_carreau(self.mwidth-1, self.mheight-1, self.curr_anim, COULEUR_SOLUTION)
 
 
   def colorier_carreau(self, i, j, k=0, couleur=COULEUR_SOL):
@@ -92,11 +80,4 @@ class MazeDisplay:
     bas_droite = ((j+1)*self.taille_carreau, (i+1)*self.taille_carreau)
     self.canvas.after(k*PERIODE_ANIM, lambda : self.canvas.create_rectangle(haut_gauche, bas_droite, fill=couleur, width=0))
   
-  @staticmethod
-  def code_to_dir(code):
-    res = []
-    if code & 1: res.append((-1, 0))
-    if code & 2: res.append((0, -1))
-    if code & 4: res.append((0, 1))
-    if code & 8: res.append((1, 0))
-    return res
+  

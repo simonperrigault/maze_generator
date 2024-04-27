@@ -2,6 +2,7 @@ from Maze import Maze
 from MazeGenerator import MazeGenerator
 from MazeDisplay import MazeDisplay
 from MazeDisplay4 import MazeDisplay4
+import MazeDisplayBorderLine
 import sys
 
 filepath = "maze.txt"
@@ -22,11 +23,11 @@ if len(sys.argv) > 1:
       maze, anim, solution = MazeGenerator.dfs(width, height)
     elif method == "prim":
       maze, anim, solution = MazeGenerator.prim(width, height)
-    elif method == "aldousbroder":
+    elif method == "ab":
       maze, anim, solution = MazeGenerator.aldousbroder(width, height)
     elif method == "wilson":
       maze, anim, solution = MazeGenerator.wilson(width, height)
     else:
       print("Invalid method")
       sys.exit(1)
-    display = MazeDisplay(maze, anim, solution)
+    display = MazeDisplayBorderLine.MazeDisplay(maze, anim, solution)

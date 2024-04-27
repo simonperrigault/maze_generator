@@ -91,8 +91,9 @@ class MazeGenerator:
 
     anim = deque()
     visited = [[False for j in range(height)] for i in range(width)]
-    visited[randint(0, width-1)][randint(0, height-1)] = True
     visited_count = 1
+    anim.append((randint(0, width-1), randint(0, height-1)))
+    visited[anim[0][0]][anim[0][1]] = True
 
     while visited_count < width*height:
       xstart, ystart = randint(0, width-1), randint(0, height-1)

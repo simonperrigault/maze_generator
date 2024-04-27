@@ -14,14 +14,14 @@ if len(sys.argv) > 1:
     if width >= 50 or height >= 50:
       print("Width and height must be less than 50")
       sys.exit(1)
-    MazeDisplay4(*MazeGenerator.randomDFS(width, height), *MazeGenerator.randomPrim(width, height), *MazeGenerator.aldousbroder(width, height), *MazeGenerator.wilson(width, height))
+    MazeDisplay4(*MazeGenerator.dfs(width, height), *MazeGenerator.prim(width, height), *MazeGenerator.aldousbroder(width, height), *MazeGenerator.wilson(width, height))
   else:
     width = int(sys.argv[2])
     height = int(sys.argv[3])
     if method == "dfs":
-      maze, anim, solution = MazeGenerator.randomDFS(width, height)
+      maze, anim, solution = MazeGenerator.dfs(width, height)
     elif method == "prim":
-      maze, anim, solution = MazeGenerator.randomPrim(width, height)
+      maze, anim, solution = MazeGenerator.prim(width, height)
     elif method == "aldousbroder":
       maze, anim, solution = MazeGenerator.aldousbroder(width, height)
     elif method == "wilson":

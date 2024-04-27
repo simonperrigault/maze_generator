@@ -11,7 +11,7 @@ DIR_TO_CODE = {
 
 class MazeGenerator:
   @staticmethod
-  def randomDFS(width, height):
+  def dfs(width, height):
     res = [[0 for j in range(height)] for i in range(width)]
 
     anim = deque()
@@ -39,29 +39,28 @@ class MazeGenerator:
     return res, anim, MazeGenerator.bfs(res)
   
   @staticmethod
-  def randomPrim(width, height):
+  def prim(width, height):
     res = [[0 for j in range(height)] for i in range(width)]
 
     anim = deque()
-    walls = list()
-    x, y = randint(0, width-1), randint(0, height-1)
-    for dir in range(4):
-      walls.append((x, y, dir))
-    anim.append((x,y))
+    frontier = list()
+    xstart, ystart = randint(0, width-1), randint(0, height-1)
+    frontier += [(xstart+DIR[i][0], ystart+DIR[i][1], i) for i in range(4) if 0 <= xstart+DIR[i][0] < width and 0 <= ystart+DIR[i][1] < height]
+    anim.append((xstart, ystart))
 
-    while walls:
-      iwall = randint(0, len(walls)-1)
-      x, y, idir = walls[iwall]
-      walls.pop(iwall)
+    while frontier:
+      ifrontier = randint(0, len(frontier)-1)
+      x, y, idir = frontier[ifrontier]
       dx, dy = DIR[idir]
-      if not 0 <= x+dx < width or not 0 <= y+dy < height: continue
-      if res[x+dx][y+dy]: continue
-      anim.append((x+dx, y+dy))
-      res[x][y] += DIR_TO_CODE[(dx, dy)]
-      res[x+dx][y+dy] += DIR_TO_CODE[(-dx, -dy)]
-      for dir in range(4):
-        if dir == idir: continue
-        walls.append((x+dx, y+dy, dir))
+      frontier.pop(ifrontier)
+      if res[x][y]: continue
+      res[x][y] += DIR_TO_CODE[(-dx, -dy)]
+      res[x-dx][y-dy] += DIR_TO_CODE[(dx, dy)]
+      anim.append((x, y))
+      for i in range(4):
+        dx, dy = DIR[i]
+        if 0 <= x+dx < width and 0 <= y+dy < height and not res[x+dx][y+dy]:
+          frontier.append((x+dx, y+dy, i))
 
     return res, anim, MazeGenerator.bfs(res)
   
